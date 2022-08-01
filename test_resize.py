@@ -9,7 +9,7 @@ def main():
     input_image = cv2.imread(args.input_image, cv2.CV_LOAD_IMAGE_COLOR)
     
     input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
-    print 'input image - ', args.input_image, input_image.shape
+    print( 'input image - ', args.input_image, input_image.shape)
 
     input_tensor = tf.placeholder(tf.float32, [1, input_image.shape[0], input_image.shape[1], 3])
 
@@ -27,7 +27,7 @@ def main():
         lambda: (new_shorter_edge, tf.cast(width / height * tf.cast(new_shorter_edge, tf.float32), tf.int32)),
         lambda: (tf.cast(height / width * tf.cast(new_shorter_edge, tf.float32), tf.int32), new_shorter_edge))
 
-    output_tensor = tf.image.resize_images(input_tensor, [new_height, new_width])
+    output_tensor = tf.image.resize(input_tensor, [new_height, new_width])
     
     # generate
     with tf.Session() as sess:
@@ -39,7 +39,7 @@ def main():
             idx = args.input_image.rfind('.')
             args.output_image = args.input_image[:idx] + '_output.jpg'
         cv2.imwrite(args.output_image, result)
-        print 'output image - ', args.output_image
+        print( 'output image - ', args.output_image)
 
 
 if __name__=='__main__':

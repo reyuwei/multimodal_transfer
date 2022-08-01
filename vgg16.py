@@ -25,32 +25,32 @@ class vgg16:
 
     def initialize_weights(self):
         # conv1_1
-        with tf.variable_scope('conv1_1') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 3, 64], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv1_1') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 3, 64], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[64], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]   
 
         # conv1_2
-        with tf.variable_scope('conv1_2') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 64, 64], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv1_2') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 64, 64], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[64], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]    
 
         # conv2_1
-        with tf.variable_scope('conv2_1') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 64, 128], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv2_1') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 64, 128], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[128], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]
 
         # conv2_2
-        with tf.variable_scope('conv2_2') as scope:      
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 128, 128], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv2_2') as scope:      
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 128, 128], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[128], dtype=tf.float32),
                                  trainable=True, name='biases')
@@ -58,79 +58,79 @@ class vgg16:
 
 
         # conv3_1
-        with tf.variable_scope('conv3_1') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 128, 256], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv3_1') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 128, 256], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[256], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]
 
         # conv3_2
-        with tf.variable_scope('conv3_2') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 256, 256], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv3_2') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 256, 256], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[256], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]
 
         # conv3_3
-        with tf.variable_scope('conv3_3') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 256, 256], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv3_3') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 256, 256], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[256], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]
 
         # conv4_1
-        with tf.variable_scope('conv4_1') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 256, 512], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv4_1') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 256, 512], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[512], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]
 
         # conv4_2
-        with tf.variable_scope('conv4_2') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 512, 512], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv4_2') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 512, 512], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[512], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]
 
         # conv4_3
-        with tf.variable_scope('conv4_3') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 512, 512], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv4_3') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 512, 512], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[512], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]
 
         # conv5_1
-        with tf.variable_scope('conv5_1') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 512, 512], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv5_1') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 512, 512], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[512], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]
 
         # conv5_2
-        with tf.variable_scope('conv5_2') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 512, 512], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv5_2') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 512, 512], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[512], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]
 
         # conv5_3
-        with tf.variable_scope('conv5_3') as scope:
-            kernel = tf.Variable(tf.truncated_normal([3, 3, 512, 512], dtype=tf.float32,
+        with tf.compat.v1.variable_scope('conv5_3') as scope:
+            kernel = tf.Variable(tf.compat.v1.truncated_normal([3, 3, 512, 512], dtype=tf.float32,
                                                      stddev=1e-1), name='weights')
             biases = tf.Variable(tf.constant(0.0, shape=[512], dtype=tf.float32),
                                  trainable=True, name='biases')
             self.parameters += [kernel, biases]
 
     def load_weights(self, weight_file, sess):
-        print 'load weights for vgg16 from - ', weight_file
+        print('load weights for vgg16 from - ', weight_file)
         weights = np.load(weight_file)
         keys = sorted(weights.keys())
         for i, k in enumerate(keys):
@@ -145,7 +145,7 @@ class vgg16:
         images = input - mean
 
         # conv1_1
-        with tf.variable_scope('conv1_1') as scope:
+        with tf.compat.v1.variable_scope('conv1_1') as scope:
             if reuse:
                 scope.reuse_variables()    
             kernel = self.parameters[0]
@@ -155,7 +155,7 @@ class vgg16:
             conv1_1 = tf.nn.relu(out)
 
         # conv1_2
-        with tf.variable_scope('conv1_2') as scope:
+        with tf.compat.v1.variable_scope('conv1_2') as scope:
             if reuse:
                 scope.reuse_variables()    
             kernel = self.parameters[2]
@@ -172,7 +172,7 @@ class vgg16:
                                name='pool1')
 
         # conv2_1
-        with tf.variable_scope('conv2_1') as scope:
+        with tf.compat.v1.variable_scope('conv2_1') as scope:
             kernel = self.parameters[4]
             conv = tf.nn.conv2d(pool1, kernel, [1, 1, 1, 1], padding='SAME')
             biases = self.parameters[5]
@@ -180,7 +180,7 @@ class vgg16:
             conv2_1 = tf.nn.relu(out)
 
         # conv2_2
-        with tf.variable_scope('conv2_2') as scope:
+        with tf.compat.v1.variable_scope('conv2_2') as scope:
             if reuse:
                 scope.reuse_variables()            
             kernel = self.parameters[6]
@@ -197,7 +197,7 @@ class vgg16:
                                name='pool2')
 
         # conv3_1
-        with tf.variable_scope('conv3_1') as scope:
+        with tf.compat.v1.variable_scope('conv3_1') as scope:
             if reuse:
                 scope.reuse_variables()
             kernel = self.parameters[8]
@@ -207,7 +207,7 @@ class vgg16:
             conv3_1 = tf.nn.relu(out)
 
         # conv3_2
-        with tf.variable_scope('conv3_2') as scope:
+        with tf.compat.v1.variable_scope('conv3_2') as scope:
             if reuse:
                 scope.reuse_variables()
             kernel = self.parameters[10]
@@ -217,7 +217,7 @@ class vgg16:
             conv3_2 = tf.nn.relu(out)
 
         # conv3_3
-        with tf.variable_scope('conv3_3') as scope:
+        with tf.compat.v1.variable_scope('conv3_3') as scope:
             if reuse:
                 scope.reuse_variables()
             kernel = self.parameters[12]
@@ -234,7 +234,7 @@ class vgg16:
                                name='pool3')
 
         # conv4_1
-        with tf.variable_scope('conv4_1') as scope:
+        with tf.compat.v1.variable_scope('conv4_1') as scope:
             if reuse:
                 scope.reuse_variables()
             kernel = self.parameters[14]
@@ -244,7 +244,7 @@ class vgg16:
             conv4_1 = tf.nn.relu(out)
 
         # conv4_2
-        with tf.variable_scope('conv4_2') as scope:
+        with tf.compat.v1.variable_scope('conv4_2') as scope:
             if reuse:
                 scope.reuse_variables()
             kernel = self.parameters[16]
@@ -254,7 +254,7 @@ class vgg16:
             conv4_2 = tf.nn.relu(out)
 
         # conv4_3
-        with tf.variable_scope('conv4_3') as scope:
+        with tf.compat.v1.variable_scope('conv4_3') as scope:
             if reuse:
                 scope.reuse_variables()
             kernel = self.parameters[18]
@@ -271,7 +271,7 @@ class vgg16:
                                name='pool4')
 
         # conv5_1
-        with tf.variable_scope('conv5_1') as scope:
+        with tf.compat.v1.variable_scope('conv5_1') as scope:
             if reuse:
                 scope.reuse_variables()
             kernel = self.parameters[20]
@@ -281,7 +281,7 @@ class vgg16:
             conv5_1 = tf.nn.relu(out)
 
         # conv5_2
-        with tf.variable_scope('conv5_2') as scope:
+        with tf.compat.v1.variable_scope('conv5_2') as scope:
             if reuse:
                 scope.reuse_variables()
             kernel = self.parameters[22]
@@ -291,7 +291,7 @@ class vgg16:
             conv5_2 = tf.nn.relu(out)
 
         # conv5_3
-        with tf.variable_scope('conv5_3') as scope:
+        with tf.compat.v1.variable_scope('conv5_3') as scope:
             if reuse:
                 scope.reuse_variables()
             kernel = self.parameters[24]
@@ -333,4 +333,4 @@ if __name__ == '__main__':
     prob = sess.run(vgg.probs, feed_dict={vgg.imgs: [img1]})[0]
     preds = (np.argsort(prob)[::-1])[0:5]
     for p in preds:
-        print class_names[p], prob[p]
+        print(class_names[p], prob[p])

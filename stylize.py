@@ -1,7 +1,8 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import argparse
 import cv2
 
+tf.disable_eager_execution()
 
 def load_graph(frozen_graph_filename):
     # We load the protobuf file from the disk and parse it to retrieve the 
@@ -23,21 +24,21 @@ def load_graph(frozen_graph_filename):
 
 def main():
     # load image
-    input_image = cv2.imread(args.input_image, cv2.CV_LOAD_IMAGE_COLOR)
+    input_image = cv2.imread(args.input_image, cv2.IMREAD_COLOR)
     #input_image = cv2.resize(input_image, (input_image.shape[1] / args.resize_ratio, input_image.shape[0] / args.resize_ratio))
     input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
-    print 'input image - ', args.input_image, input_image.shape
+    print('input image - ', args.input_image, input_image.shape)
 
     input_tensor = tf.placeholder(tf.float32, [1, input_image.shape[0], input_image.shape[1], 3])
     short_edge_1 = tf.placeholder(tf.int32, [])
     short_edge_2 = tf.placeholder(tf.int32, [])
     short_edge_3 = tf.placeholder(tf.int32, [])
 
-    '''
+    # '''
     graph = load_graph(args.model)
     for op in graph.get_operations():
-       print op.name 
-    '''
+       print(op.name )
+    # '''
 
     # load model
     with tf.gfile.GFile(args.model, "rb") as f:
@@ -71,13 +72,13 @@ def main():
         cv2.imwrite(output_name_1, result_1)
         cv2.imwrite(output_name_2, result_2)
         cv2.imwrite(output_name_3, result_3)
-        print 'output image - ', output_name_1, output_name_2, output_name_3
+        print('output image - ', output_name_1, output_name_2, output_name_3)
 
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser('Stylizer')
     parser.add_argument('--model', type=str, default='models/starry_night.pb')
-    parser.add_argument('--input_image', type=str, default='./test_images/Aaron_Eckhart_0001.jpg')
+    parser.add_argument('--input_image', type=str, default='./test_images/xiula_unfinished.jpg')
     parser.add_argument('--hierarchical_short_edges', type=str, default='256,512,1024')
    
 

@@ -1,4 +1,6 @@
+from code import interact
 import tensorflow as tf
+# import tensorflow.compat.v1 as tf
 from style_subnet import *
 from enhance_subnet import *
 from refine_subnet import *
@@ -10,7 +12,12 @@ import numpy as np
 import time
 import datetime
 
-FLAGS = tf.app.flags.FLAGS
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
+tf.compat.v1.disable_eager_execution()
+FLAGS = tf.compat.v1.flags.FLAGS
+
+
 
 def compute_gram(features):
     gram_list = []
@@ -18,7 +25,7 @@ def compute_gram(features):
         shape = tf.shape(feature)
         psi = tf.reshape(feature, [shape[0], shape[1] * shape[2], shape[3]])
         gram = tf.matmul(psi, psi, transpose_a = True)
-        gram = tf.div(gram, tf.cast(shape[1] * shape[2] * shape[3], tf.float32))
+        gram = tf.compat.v1.div(gram, tf.cast(shape[1] * shape[2] * shape[3], tf.float32))
         gram_list.append( gram )
     return gram_list
 
@@ -29,37 +36,37 @@ def train(argv=None):
     input_style_image = cv2.imread(FLAGS.style_image)
     input_style_image = cv2.cvtColor(input_style_image, cv2.COLOR_BGR2RGB)
 
-    print "compute gram matrix from style image"
-    with tf.Session(config=tf.ConfigProto(allow_soft_placement=True, gpu_options=tf.GPUOptions(allow_growth=True))) as sess:
+    print("compute gram matrix from style image")
+    with tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(allow_soft_placement=True, gpu_options=tf.compat.v1.GPUOptions(allow_growth=True))) as sess:
         vgg = vgg16('vgg16_weights.npz', sess)
 
         # 256 x 256
-        style_image = tf.placeholder(tf.float32, [1, 256, 256, 3])
+        style_image = tf.compat.v1.placeholder(tf.float32, [1, 256, 256, 3])
         _, style_features = vgg.get_features(style_image)
         style_gram_list = compute_gram(style_features)
         target_gram_256_list = sess.run(style_gram_list, feed_dict = {style_image : [cv2.resize(input_style_image, (256, 256))]})
 
         # 512 x 512
-        style_image = tf.placeholder(tf.float32, [1, 512, 512, 3])
+        style_image = tf.compat.v1.placeholder(tf.float32, [1, 512, 512, 3])
         _, style_features = vgg.get_features(style_image)
         style_gram_list = compute_gram(style_features)
         target_gram_512_list = sess.run(style_gram_list, feed_dict = {style_image : [cv2.resize(input_style_image, (512, 512))]})
 
         # 1024 x 1024
-        style_image = tf.placeholder(tf.float32, [1, 1024, 1024, 3])
+        style_image = tf.compat.v1.placeholder(tf.float32, [1, 1024, 1024, 3])
         _, style_features = vgg.get_features(style_image)
         style_gram_list = compute_gram(style_features)
         target_gram_1024_list = sess.run(style_gram_list, feed_dict = {style_image : [cv2.resize(input_style_image, (1024, 1024))]})
 
     hierarchical_weights = [float(w) for w in FLAGS.hierarchical_weights.split(',')]
     
-    tf.reset_default_graph()
+    tf.compat.v1.reset_default_graph()
     # build multimodal transfer metnwork
     vgg = vgg16()
-    input_image = tf.placeholder(tf.float32, [None, FLAGS.train_size, FLAGS.train_size, 3], name='input_image')
-    short_edge_1 = tf.placeholder(tf.int32, shape=[], name='short_edge_1')
-    short_edge_2 = tf.placeholder(tf.int32, shape=[], name='short_edge_2')
-    short_edge_3 = tf.placeholder(tf.int32, shape=[], name='short_edge_3')
+    input_image = tf.compat.v1.placeholder(tf.float32, [None, FLAGS.train_size, FLAGS.train_size, 3], name='input_image')
+    short_edge_1 = tf.compat.v1.placeholder(tf.int32, shape=[], name='short_edge_1')
+    short_edge_2 = tf.compat.v1.placeholder(tf.int32, shape=[], name='short_edge_2')
+    short_edge_3 = tf.compat.v1.placeholder(tf.int32, shape=[], name='short_edge_3')
 
     input_content_features = []
     generated_content_features = []
@@ -95,7 +102,7 @@ def train(argv=None):
         generated_content_feature = generated_content_features[i]
         feature_shape = tf.shape(generated_content_feature)
         feature_size = tf.cast(feature_shape[1] * feature_shape[2] * feature_shape[3], dtype=tf.float32)
-        feature_reconstruction_loss = hierarchical_weights[i] * FLAGS.content_weight * tf.reduce_sum(tf.squared_difference(generated_content_feature, input_content_feature)) / feature_size
+        feature_reconstruction_loss = hierarchical_weights[i] * FLAGS.content_weight * tf.reduce_sum(tf.compat.v1.squared_difference(generated_content_feature, input_content_feature)) / feature_size
         feature_reconstruction_loss_list.append( feature_reconstruction_loss )
     feature_reconstruction_loss = tf.add_n(feature_reconstruction_loss_list)
 
@@ -114,47 +121,48 @@ def train(argv=None):
     total_loss = feature_reconstruction_loss + style_reconstruction_loss
     
     # only updates stylization parameters
-    train_vars_style = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,scope='style_subnet')
-    train_vars_enhance = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,scope='enhance_subnet')
-    train_vars_refine = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,scope='refine_subnet')
+    train_vars_style = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES,scope='style_subnet')
+    train_vars_enhance = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES,scope='enhance_subnet')
+    train_vars_refine = tf.compat.v1.get_collection(tf.compat.v1.GraphKeys.TRAINABLE_VARIABLES,scope='refine_subnet')
     train_vars = train_vars_style + train_vars_enhance + train_vars_refine
-    train_optimizer = tf.train.AdamOptimizer(0.001).minimize(total_loss, var_list = train_vars)
+    train_optimizer = tf.compat.v1.train.AdamOptimizer(0.001).minimize(total_loss, var_list = train_vars)
 
-    tf.summary.scalar('feature reconstruction loss', feature_reconstruction_loss)
-    tf.summary.scalar('style reconstruction loss', style_reconstruction_loss)
-    tf.summary.image('input image', input_image, max_outputs=4)
-    tf.summary.image('generated_image_1', generated_image_1, max_outputs=4)
-    tf.summary.image('generated_image_2', generated_image_2, max_outputs=4)
-    tf.summary.image('generated_image_3', generated_image_3, max_outputs=4)
+    tf.compat.v1.summary.scalar('feature reconstruction loss', feature_reconstruction_loss)
+    tf.compat.v1.summary.scalar('style reconstruction loss', style_reconstruction_loss)
+    tf.compat.v1.summary.image('input image', input_image, max_outputs=4)
+    tf.compat.v1.summary.image('generated_image_1', generated_image_1, max_outputs=4)
+    tf.compat.v1.summary.image('generated_image_2', generated_image_2, max_outputs=4)
+    tf.compat.v1.summary.image('generated_image_3', generated_image_3, max_outputs=4)
 
     # Build the summary operation based on the TF collection of Summaries.
-    summary_op = tf.summary.merge_all()
+    summary_op = tf.compat.v1.summary.merge_all()
 
     # Create a saver.
-    saver = tf.train.Saver(train_vars)
+    saver = tf.compat.v1.train.Saver(train_vars)
 
     # get train images
     train_image_batch, num_train_images = get_train_images()
     iteration = num_train_images / FLAGS.batch_size
-
+    iteration = int(iteration)
+    print(iteration)
     # open session
-    gpu_options = tf.GPUOptions(allow_growth=True)
-    with tf.Session(config=tf.ConfigProto(allow_soft_placement=True, gpu_options=gpu_options)) as sess: 
+    gpu_options = tf.compat.v1.GPUOptions(allow_growth=True)
+    with tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(allow_soft_placement=True, gpu_options=gpu_options)) as sess: 
         # initialize the variables
-        sess.run(tf.group(tf.global_variables_initializer(), tf.local_variables_initializer()))
+        sess.run(tf.group(tf.compat.v1.global_variables_initializer(), tf.compat.v1.local_variables_initializer()))
         
         # load weight again because variables are all initialized
         vgg.load_weights('vgg16_weights.npz', sess) 
 
         # write graph definition
-        tf.train.write_graph(sess.graph_def, FLAGS.summary_dir, '%s_graph_def.pb' % (FLAGS.style_image.split('/')[-1].split('.')[0]))
+        # tf.compat.v1.train.write_graph(sess.graph_def, FLAGS.summary_dir, '%s_graph_def.pb' % (FLAGS.style_image.split('/')[-1].split('.')[0]))
 
         # summary
-        summary_writer = tf.summary.FileWriter(FLAGS.summary_dir, sess.graph)
+        summary_writer = tf.compat.v1.summary.FileWriter(FLAGS.summary_dir, sess.graph)
 
         # initialize the queue threads to start to shovel data
-        coord = tf.train.Coordinator()
-        threads = tf.train.start_queue_runners(coord=coord)
+        coord = tf.compat.v1.train.Coordinator()
+        threads = tf.compat.v1.train.start_queue_runners(coord=coord)
 
         short_edges = [int(w) for w in FLAGS.hierarchical_short_edges.split(',')]
 
@@ -176,7 +184,7 @@ def train(argv=None):
 
                     ts = time.time()
                     st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-                    print '%s, epoch[%d] iter[%d] : feature loss - %f, style loss - %f' % (st, i, j, output_f_loss, output_s_loss)
+                    print('%s, epoch[%d] iter[%d] : feature loss - %f, style loss - %f' % (st, i, j, output_f_loss, output_s_loss))
                 
                 
                 # save
@@ -189,20 +197,20 @@ def train(argv=None):
 
 def get_train_images():
     image_list = glob(FLAGS.train_path + '/*.jpg')
-    print len(image_list)
+    print(len(image_list))
     
     train_image_name = ops.convert_to_tensor(image_list, dtype=dtypes.string)
-    train_input_queue = tf.train.slice_input_producer([train_image_name], shuffle = True)
+    train_input_queue = tf.compat.v1.train.slice_input_producer([train_image_name], shuffle = True)
     
-    file_content = tf.read_file(train_input_queue[0])
+    file_content = tf.compat.v1.read_file(train_input_queue[0])
     train_image = tf.image.decode_jpeg(file_content, channels=3)
     train_image = tf.cast(train_image, tf.float32)
-    train_image = tf.image.resize_images(train_image, [FLAGS.train_size, FLAGS.train_size])
+    train_image = tf.image.resize(train_image, [FLAGS.train_size, FLAGS.train_size])
     train_image.set_shape([FLAGS.train_size, FLAGS.train_size, 3])
 
     min_after_dequeue = 100
     capacity = min_after_dequeue + 4 * FLAGS.batch_size
-    train_image = tf.train.shuffle_batch(
+    train_image = tf.compat.v1.train.shuffle_batch(
         [train_image],
         batch_size=FLAGS.batch_size
         ,num_threads=4
@@ -214,16 +222,16 @@ def get_train_images():
 
 
 if __name__ == '__main__':
-    tf.app.flags.DEFINE_integer('batch_size', 2, """The batch size to use.""")
-    tf.app.flags.DEFINE_float('content_weight', 1, """weight for content reconstruction loss.""")
-    tf.app.flags.DEFINE_float('style_weight', 5, """weight for style reconstruction loss.""")
-    tf.app.flags.DEFINE_string('hierarchical_weights', '1,1,1', """weigts for hierarchical stylization loss.""")
-    tf.app.flags.DEFINE_string('hierarchical_short_edges', '256,512,512', """short edges for hierarchy training""")
-    tf.app.flags.DEFINE_string('summary_dir', './summary', """summary directory.""")
-    tf.app.flags.DEFINE_string('style_image', './style_images/starry_night.jpg', """target style image""")
-    tf.app.flags.DEFINE_integer('train_size', 512, """image width and height""")
-    tf.app.flags.DEFINE_string('train_path', './data/train2014', """path which contains train images""")
-    tf.app.flags.DEFINE_integer('epoch', 5, """epoch""")
+    tf.compat.v1.flags.DEFINE_integer('batch_size', 2, """The batch size to use.""")
+    tf.compat.v1.flags.DEFINE_float('content_weight', 1, """weight for content reconstruction loss.""")
+    tf.compat.v1.flags.DEFINE_float('style_weight', 5, """weight for style reconstruction loss.""")
+    tf.compat.v1.flags.DEFINE_string('hierarchical_weights', '1,1,1', """weigts for hierarchical stylization loss.""")
+    tf.compat.v1.flags.DEFINE_string('hierarchical_short_edges', '256,512,512', """short edges for hierarchy training""")
+    tf.compat.v1.flags.DEFINE_string('summary_dir', './summary', """summary directory.""")
+    tf.compat.v1.flags.DEFINE_string('style_image', './style_images/xiula_circus.jpg', """target style image""")
+    tf.compat.v1.flags.DEFINE_integer('train_size', 512, """image width and height""")
+    tf.compat.v1.flags.DEFINE_string('train_path', 'E:\\DATASET\\8_coco\\train2014', """path which contains train images""")
+    tf.compat.v1.flags.DEFINE_integer('epoch', 5, """epoch""")
     
 
     # clear summary directory
@@ -231,4 +239,4 @@ if __name__ == '__main__':
     for f in log_files:
         os.remove(f)
 
-    tf.app.run(main=train)
+    tf.compat.v1.app.run(main=train)
